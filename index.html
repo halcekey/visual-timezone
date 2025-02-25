@@ -1,1 +1,143 @@
-<html><body><p>yomimono</p></body></html>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイムゾーンの視覚的表示</title>
+    <link rel="icon" type="image/svg+xml" href="https://halcekey.github.io/favicon.svg">
+    <link rel="icon alternate" type="image/png" href="https://halcekey.github.io/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+        }
+        .timezone {
+            display: flex;
+            align-items: center;
+        }
+        .label {
+            width: 150px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .bar {
+            display: grid;
+            grid-template-columns: repeat(24, 1fr);
+            width: 100%;
+            height: 40px;
+            border: 1px solid black;
+            position: relative;
+        }
+        .hour {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: black;
+        }
+        .day { background-color: #ffd07e; }
+        .night { background-color: #6278e3; color: white; }
+        .remove-btn {
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #f97878;
+            color: white;
+            border: none;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <label for="timezoneSelect">タイムゾーンを選択/Select Timezone:</label>
+        <select id="timezoneSelect">
+            <option value="-12">UTC-12</option>
+            <option value="-11">UTC-11</option>
+            <option value="-10">UTC-10</option>
+            <option value="-9">UTC-9</option>
+            <option value="-8">UTC-8</option>
+            <option value="-7">UTC-7</option>
+            <option value="-6">UTC-6</option>
+            <option value="-5">UTC-5</option>
+            <option value="-4">UTC-4</option>
+            <option value="-3">UTC-3</option>
+            <option value="-2">UTC-2</option>
+            <option value="-1">UTC-1</option>
+            <option value="0" selected>UTC±0</option>
+            <option value="1">UTC+1</option>
+            <option value="2">UTC+2</option>
+            <option value="3">UTC+3</option>
+            <option value="4">UTC+4</option>
+            <option value="5">UTC+5</option>
+            <option value="6">UTC+6</option>
+            <option value="7">UTC+7</option>
+            <option value="8">UTC+8</option>
+            <option value="9">UTC+9</option>
+            <option value="10">UTC+10</option>
+            <option value="11">UTC+11</option>
+            <option value="12">UTC+12</option>
+            <option value="13">UTC+13</option>
+            <option value="14">UTC+14</option>
+        </select>
+        <button onclick="addTimeZone()">追加/add</button>
+        <div id="timezones" class="container"></div>
+    </div>
+
+    <script>
+        function createTimeBar(timezone, offset) {
+            const container = document.getElementById("timezones");
+            const tzDiv = document.createElement("div");
+            tzDiv.classList.add("timezone");
+            
+            const label = document.createElement("div");
+            label.classList.add("label");
+            label.textContent = timezone;
+            
+            const barContainer = document.createElement("div");
+            barContainer.classList.add("bar-container");
+            
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            
+            for (let i = 0; i < 24; i++) {
+                const hour = (i - offset + 24) % 24;
+                const div = document.createElement("div");
+                div.classList.add("hour", hour >= 8 && hour < 20 ? "day" : "night");
+                div.textContent = hour;
+                bar.appendChild(div);
+            }
+            
+            const removeBtn = document.createElement("button");
+            removeBtn.classList.add("remove-btn");
+            removeBtn.textContent = "×";
+            removeBtn.onclick = function() {
+                container.removeChild(tzDiv);
+            };
+            
+            barContainer.appendChild(bar);
+            tzDiv.appendChild(label);
+            tzDiv.appendChild(barContainer);
+            tzDiv.appendChild(removeBtn);
+            container.appendChild(tzDiv);
+        }
+        
+        function addTimeZone() {
+            const select = document.getElementById("timezoneSelect");
+            const timezone = select.options[select.selectedIndex].text;
+            const offset = parseInt(select.value, 10);
+            createTimeBar(timezone, -offset);
+        }
+    </script>
+</body>
+</html>
